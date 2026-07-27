@@ -5,7 +5,7 @@
   const client=window.supabase?.createClient?.(cfg.supabaseUrl,cfg.supabasePublishableKey,{
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}
   });
-  let user=null, ready=false, applyingRemote=false, saveTimer=null;
+  let user=null, ready=false, applyingRemote=false, saveTimer=null, sessionApplied=false;
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -86,7 +86,7 @@
     if(!ready||!user||applyingRemote)return;
     clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveNow(state),650);
   }
-  async function logout(){window.English350App?.goHome?.();await client.auth.signOut();}
+  async function logout(){await client.auth.signOut();}
   function accountHTML(){
     if(!user)return '';
     return `<div class="account-mini"><div class="account-avatar">${esc((user.user_metadata?.display_name||user.email||'U').trim()[0]?.toUpperCase())}</div><div class="account-copy"><b>${esc(user.user_metadata?.display_name||'حسابي')}</b><span>${esc(user.email||'')}</span></div><button class="b gh account-logout" onclick="English350Cloud.logout()">خروج</button></div>`;
@@ -125,18 +125,26 @@
     html+='<div class="team-list">'+(rows||[]).map(r=>{const p=pm[r.user_id]||{},g=gm[r.user_id]||{};const acc=g.total_attempts?Math.round(g.correct_attempts/g.total_attempts*100):0;return `<div class="team-user"><div><b>${esc(p.display_name||'مستخدم')}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="team-metrics"><span>${g.completed_items||0} منجز</span><span>${acc}% دقة</span><span>${g.current_streak||0} أيام</span></div></div>`}).join('')+'</div>';
     el.innerHTML=html;
   }
-  async function applySession(session,openHome=false){
-    user=session?.user||null;
+  async function applySession(session,{force=false}={}){
+    const nextUser=session?.user||null;
+    const sameUser=Boolean(user&&nextUser&&user.id===nextUser.id);
+    user=nextUser;
     showAuth(!user);
+
     if(user){
       ready=true;
-      await loadRemoteState();
-      if(openHome)window.English350App?.goHome?.();
-      else window.English350App?.render?.();
+      // لا نعيد تحميل التقدم أو إعادة رسم التطبيق عند تجدد التوكن
+      // أو عند الرجوع للتبويب؛ المزامنة الكاملة تحدث مرة واحدة فقط لكل جلسة.
+      if(force||!sessionApplied||!sameUser){
+        sessionApplied=true;
+        await loadRemoteState();
+        window.English350App?.render?.();
+      }
       if(location.hash||new URLSearchParams(location.search).has('code')){
         history.replaceState({},document.title,location.pathname);
       }
     }else{
+      sessionApplied=false;
       ready=false;
       setSync('غير متصل','');
     }
@@ -147,13 +155,29 @@
     document.querySelectorAll('[data-auth-mode]').forEach(b=>b.onclick=()=>setAuthMode(b.dataset.authMode));
 
     client.auth.onAuthStateChange((event,session)=>{
-      const shouldOpenHome=event==='SIGNED_IN';
-      setTimeout(()=>applySession(session,shouldOpenHome),0);
+      setTimeout(()=>{
+        if(event==='TOKEN_REFRESHED'){
+          // تحديث بيانات الجلسة فقط بدون ريفريش الواجهة أو رسالة مزامنة.
+          user=session?.user||user;
+          return;
+        }
+        if(event==='USER_UPDATED'){
+          user=session?.user||user;
+          return;
+        }
+        if(event==='SIGNED_OUT'){
+          applySession(null);
+          return;
+        }
+        if(event==='SIGNED_IN'||event==='PASSWORD_RECOVERY'){
+          applySession(session,{force:!sessionApplied});
+        }
+      },0);
     });
 
     const {data,error}=await client.auth.getSession();
     if(error)authMessage(error.message||'تعذر استعادة جلسة الدخول.','error');
-    await applySession(data?.session||null);
+    await applySession(data?.session||null,{force:true});
 
     window.addEventListener('online',()=>{setSync('جارٍ الاستئناف','syncing');scheduleSave(window.English350App?.getState?.())});
   }
