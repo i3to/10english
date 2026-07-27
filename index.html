@@ -256,9 +256,37 @@ justify-content:center;padding:20px;z-index:99}
 .production textarea,.scenario textarea{width:100%;min-height:80px;resize:vertical;margin:8px 0}.answerbox{padding:12px;border-radius:12px;background:var(--blue-l);margin-top:9px}.hiddenanswer{filter:blur(7px);user-select:none}.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modecard{padding:15px;border:1px solid var(--line-soft);border-radius:16px;background:var(--card);text-align:right;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .12s}.modecard:active{transform:scale(.97)}.modecard b{display:block;margin-bottom:4px}.ability-list{display:grid;gap:8px}.ability-item{display:flex;gap:8px;align-items:center;padding:10px;border-radius:11px;background:var(--bg)}
 .quick-timer{font-size:28px;font-weight:900;text-align:center;color:var(--red-t);margin:8px}.situation{font-size:15px;background:var(--gold-l);padding:12px;border-radius:12px;margin:10px 0}.empty{text-align:center;padding:28px 14px;color:var(--tx2)}
 @media(max-width:430px){.modegrid{grid-template-columns:1fr}.phasebar{grid-template-columns:repeat(2,1fr)}}
+
+/* Cloud account + League */
+.auth-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:grid;place-items:center;padding:22px}.auth-screen.hide{display:none}.auth-card{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow-card)}.auth-brand{text-align:center;margin-bottom:18px}.auth-brand strong{display:block;font-size:24px}.auth-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg);padding:5px;border-radius:14px;margin-bottom:14px}.auth-tabs button{border:0;border-radius:10px;padding:10px 4px;background:transparent;font-weight:900;color:var(--tx2)}.auth-tabs button.on{background:var(--card);color:var(--green-t);box-shadow:var(--shadow-sm)}.auth-card input{margin-bottom:10px}.auth-message{min-height:22px;font-size:13px;margin:8px 0;color:var(--tx2)}.auth-message.error{color:var(--red-t)}.auth-message.success{color:var(--green-t)}.sync-status{position:fixed;top:66px;left:12px;z-index:80;font-size:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--tx3);box-shadow:var(--shadow-sm)}.sync-status[data-state="ok"]{color:var(--green-t)}.sync-status[data-state="error"]{color:var(--red-t)}
+.account-mini{display:flex;align-items:center;gap:10px}.account-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--green-l);color:var(--green-t);font-weight:1000}.account-copy{min-width:0;flex:1}.account-copy b,.account-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-copy span{font-size:11px;color:var(--tx3)}.account-logout{padding:8px 11px}
+.league-hero{background:linear-gradient(135deg,var(--gold-l),var(--card));border-color:var(--gold)}.league-title{display:flex;align-items:center;gap:10px}.league-title .league-icon{font-size:36px}.league-code-box{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:12px;background:var(--bg);border-radius:14px}.league-code{font-size:20px;letter-spacing:2px;direction:ltr}.league-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.league-empty{text-align:center;padding:26px 12px}.league-empty .big{font-size:52px;margin-bottom:8px}.league-list{display:grid;gap:9px}.league-user{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px;border:1px solid var(--line-soft);border-radius:16px;background:var(--card)}.league-user.me{border-color:var(--green);background:var(--green-l)}.league-rank{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:1000;background:var(--bg)}.league-user:nth-child(1) .league-rank{background:var(--gold-l);color:var(--gold-t)}.league-user:nth-child(2) .league-rank{background:var(--shade);color:var(--tx)}.league-user:nth-child(3) .league-rank{background:#f2dfd0;color:#9b5a2d}.league-person{min-width:0}.league-person b,.league-person small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.league-person small{color:var(--tx3);margin-top:3px}.league-score{text-align:left;direction:ltr}.league-score b{display:block;font-size:16px}.league-score small{color:var(--tx3)}.league-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;font-size:10px;color:var(--tx2)}.league-status{text-align:center;padding:14px;color:var(--tx2)}
+.cloud-modal{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.48);display:grid;place-items:center;padding:18px}.cloud-modal.hide{display:none}.cloud-modal-card{width:min(420px,100%);background:var(--card);border-radius:22px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.cloud-modal-card h2{margin:0 0 7px}.cloud-modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+@media(max-width:370px){.league-actions,.cloud-modal-actions{grid-template-columns:1fr}.league-user{grid-template-columns:38px minmax(0,1fr)}.league-score{grid-column:2;text-align:right}}
+
 </style>
 </head>
 <body>
+
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand"><strong>English 350</strong><span class="sub">سجّل دخولك لحفظ تقدمك والمشاركة في الدوري</span></div>
+    <div class="auth-tabs">
+      <button type="button" class="on" data-auth-mode="login">دخول</button>
+      <button type="button" data-auth-mode="signup">حساب جديد</button>
+      <button type="button" data-auth-mode="magic">رابط سريع</button>
+    </div>
+    <form id="auth-form" data-mode="login">
+      <input id="auth-name" class="hide" type="text" autocomplete="name" placeholder="الاسم الظاهر">
+      <input id="auth-email" type="email" autocomplete="email" placeholder="البريد الإلكتروني" required>
+      <input id="auth-password" type="password" autocomplete="current-password" placeholder="كلمة المرور">
+      <div id="auth-message" class="auth-message"></div>
+      <button id="auth-submit" class="b g full" type="submit">دخول</button>
+    </form>
+  </div>
+</div>
+<div id="sync-status" class="sync-status">غير متصل</div>
+
 
 <div class="hd">
 <div class="lg" id="pagetitle">الرئيسية</div>
@@ -277,6 +305,7 @@ justify-content:center;padding:20px;z-index:99}
 <div id="v-find" class="view hide"></div>
 <div id="v-phrases" class="view hide"></div>
 <div id="v-more" class="view hide"></div>
+<div id="v-league" class="view hide"><div id="team-panel" class="league-status">جارٍ تحميل الدوري...</div></div>
 </div>
 
 <div class="nav">
@@ -299,7 +328,7 @@ const D0=864e5;
 let S={cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[],production:{},scenarios:{},intro:{},spoken:{}};
 try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
 if(!S.write)S.write={};if(!S.phrases)S.phrases=[];if(!S.production)S.production={};if(!S.scenarios)S.scenarios={};if(!S.intro)S.intro={};if(!S.spoken)S.spoken={};if(!S.theme)S.theme='system';
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){} window.English350Cloud?.scheduleSave?.(S)};
 const AR=n=>String(n);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -921,9 +950,11 @@ function vMore(){
  </div>
  <div class="quick-review-card" onclick="startQuick()"><div class="quick-review-icon">${ic('lightning')}</div><div class="quick-review-copy"><b>مراجعة 60 ثانية</b><span>${due?`لديك ${AR(due)} كلمة جاهزة للمراجعة`:'جلسة سريعة لتثبيت ما تعلمته'}</span></div>${ic('chevronLeft')}</div>
  <div class="c" style="padding:0">
+ <div class="more-row" onclick="show('league')"><i>${ic('trophy')}</i><div>الدوري</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="show('phrases')"><i>${ic('star')}</i><div>عباراتي المحفوظة</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('settings')"><i>${ic('settings')}</i><div>الإعدادات</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('about')"><i>${ic('info')}</i><div>حول التطبيق</div><span>${ic('chevronLeft')}</span></div></div>`;
+ h+=`<div class="c">${window.English350Cloud?.accountHTML?.()||'<div class="sub">الحساب السحابي قيد التهيئة...</div>'}</div>`;
  h+=`<div id="settings-box" class="c ${MORE_PANEL==='settings'?'':'hide'}"><h2>الإعدادات</h2>
  <div class="sub" style="margin:10px 0 5px">المظهر</div>
  <div class="seg">
@@ -934,6 +965,13 @@ function vMore(){
  ${TTS.ok?`<div class="sub" style="margin:14px 0 5px">الصوت</div><select onchange="S.voice=this.value;save();pickVoice()">${TTS.list.map(v=>`<option value="${esc(v.name)}" ${TTS.voice&&TTS.voice.name===v.name?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select><div class="sub" style="margin:12px 0 5px">سرعة النطق</div><input type="range" min="0.5" max="1.3" step="0.1" value="${S.rate||.9}" onchange="S.rate=+this.value;save()">`:''}<button class="b gh full" style="margin-top:15px" onclick="reset()">إعادة تعيين التقدم</button></div>`;
  h+=`<div id="about-box" class="c ${MORE_PANEL==='about'?'':'hide'}"><h2>حول التطبيق</h2><div class="sub">منهج الإنجليزية — تجربة تعلم مركزة تجمع الكلمات والعبارات والمراجعة والتحدث.</div></div>`;
  document.getElementById('v-more').innerHTML=h;
+}
+
+
+/* ---------- LEAGUE ---------- */
+function vLeague(){
+ document.getElementById('v-league').innerHTML=`<button class="backbtn" onclick="show('more')">${ic('chevronLeft')}رجوع</button><div id="team-panel" class="league-status">جارٍ تحميل الدوري...</div>`;
+ window.English350Cloud?.renderTeamPanel?.();
 }
 
 /* ---------- SHELL ---------- */
@@ -953,7 +991,7 @@ function show(v){
   document.querySelectorAll('.nv').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   render();window.scrollTo(0,0);
 }
-const TITLES={home:'الرئيسية',path:'المنهج',quiz:'مراجعة',stat:'التقدم',find:'بحث',phrases:'عباراتي',more:'المزيد'};
+const TITLES={home:'الرئيسية',path:'المنهج',quiz:'مراجعة',stat:'التقدم',find:'بحث',phrases:'عباراتي',league:'الدوري',more:'المزيد'};
 function setTitle(t){const e=document.getElementById('pagetitle');if(e)e.textContent=t}
 function countTo(el,target){
   if(!el)return;
@@ -981,7 +1019,7 @@ function animateCounts(root){
 function render(){
   for(const k in SAY)delete SAY[k];SID=0;
   setTitle(TITLES[V]||'منهج الإنجليزية');
-  ({home:vHome,path:vPath,quiz:vQuiz,stat:vStat,find:vFind,phrases:vPhrases,more:vMore})[V]();
+  ({home:vHome,path:vPath,quiz:vQuiz,stat:vStat,find:vFind,phrases:vPhrases,league:vLeague,more:vMore})[V]();
   updHd();mountIcons();animateCounts();
 }
 function applyTheme(){document.documentElement.dataset.theme=S.theme||'system'}
@@ -996,5 +1034,14 @@ document.querySelectorAll('.nv').forEach(b=>b.onclick=()=>show(b.dataset.v));
 applyTheme();
 mountIcons();
 show('home');
+window.English350App={
+ getState:()=>JSON.parse(JSON.stringify(S)),
+ replaceState:state=>{S=Object.assign({cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[],production:{},scenarios:{},intro:{},spoken:{}},state||{});try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};render()},
+ render,
+ showHome:()=>show('home')
+};
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/cloud.js"></script>
 </body></html>
