@@ -86,7 +86,7 @@
     if(!ready||!user||applyingRemote)return;
     clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveNow(state),650);
   }
-  async function logout(){await client.auth.signOut();}
+  async function logout(){window.English350App?.goHome?.();await client.auth.signOut();}
   function accountHTML(){
     if(!user)return '';
     return `<div class="account-mini"><div class="account-avatar">${esc((user.user_metadata?.display_name||user.email||'U').trim()[0]?.toUpperCase())}</div><div class="account-copy"><b>${esc(user.user_metadata?.display_name||'حسابي')}</b><span>${esc(user.email||'')}</span></div><button class="b gh account-logout" onclick="English350Cloud.logout()">خروج</button></div>`;
@@ -125,13 +125,14 @@
     html+='<div class="team-list">'+(rows||[]).map(r=>{const p=pm[r.user_id]||{},g=gm[r.user_id]||{};const acc=g.total_attempts?Math.round(g.correct_attempts/g.total_attempts*100):0;return `<div class="team-user"><div><b>${esc(p.display_name||'مستخدم')}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="team-metrics"><span>${g.completed_items||0} منجز</span><span>${acc}% دقة</span><span>${g.current_streak||0} أيام</span></div></div>`}).join('')+'</div>';
     el.innerHTML=html;
   }
-  async function applySession(session){
+  async function applySession(session,openHome=false){
     user=session?.user||null;
     showAuth(!user);
     if(user){
       ready=true;
       await loadRemoteState();
-      window.English350App?.render?.();
+      if(openHome)window.English350App?.goHome?.();
+      else window.English350App?.render?.();
       if(location.hash||new URLSearchParams(location.search).has('code')){
         history.replaceState({},document.title,location.pathname);
       }
@@ -145,8 +146,9 @@
     $('auth-form')?.addEventListener('submit',submitAuth);
     document.querySelectorAll('[data-auth-mode]').forEach(b=>b.onclick=()=>setAuthMode(b.dataset.authMode));
 
-    client.auth.onAuthStateChange((_event,session)=>{
-      setTimeout(()=>applySession(session),0);
+    client.auth.onAuthStateChange((event,session)=>{
+      const shouldOpenHome=event==='SIGNED_IN';
+      setTimeout(()=>applySession(session,shouldOpenHome),0);
     });
 
     const {data,error}=await client.auth.getSession();
