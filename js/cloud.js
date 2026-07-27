@@ -130,7 +130,7 @@
     await copyLeagueCode(code);
   }
   function roleLabel(role){return role==='owner'?'المالك':role==='admin'?'مدير':'عضو'}
-  function scheduleLeagueRender(){clearTimeout(leagueRenderTimer);leagueRenderTimer=setTimeout(()=>renderTeamPanel(),250)}
+  function scheduleLeagueRender(){clearTimeout(leagueRenderTimer);leagueRenderTimer=setTimeout(()=>{const panel=$('team-panel');if(panel&&!panel.closest('.view')?.classList.contains('hide'))renderTeamPanel()},900)}
   function subscribeLeague(teamId){
     if(leagueChannel){client.removeChannel(leagueChannel);leagueChannel=null}
     leagueChannel=client.channel(`league-${teamId}`)
