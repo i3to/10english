@@ -133,15 +133,18 @@
 
     if(user){
       ready=true;
+      // وجّه للرئيسية فورًا قبل انتظار تحميل بيانات السحابة،
+      // حتى لا تظهر صفحة «المزيد» لثوانٍ ثم تنتقل للرئيسية.
+      if(navigateHome){
+        window.English350App?.showHome?.();
+      }
       // لا نعيد تحميل التقدم أو إعادة رسم التطبيق عند تجدد التوكن
       // أو عند الرجوع للتبويب؛ المزامنة الكاملة تحدث مرة واحدة فقط لكل جلسة.
       if(force||!sessionApplied||!sameUser){
         sessionApplied=true;
         await loadRemoteState();
       }
-      if(navigateHome){
-        window.English350App?.showHome?.();
-      }else{
+      if(!navigateHome){
         window.English350App?.render?.();
       }
       if(location.hash||new URLSearchParams(location.search).has('code')){
