@@ -682,5 +682,6 @@ show('home');
 window.English350App={
  getState:()=>JSON.parse(JSON.stringify(S)),
  replaceState:(next)=>{S=Object.assign({cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[],production:{},scenarios:{},intro:{},spoken:{},theme:'system'},next||{});try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};applyTheme();render()},
- render:()=>render()
+ render:()=>render(),
+ goHome:()=>show('home')
 };
