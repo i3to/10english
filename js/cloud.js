@@ -125,10 +125,23 @@
     html+='<div class="team-list">'+(rows||[]).map(r=>{const p=pm[r.user_id]||{},g=gm[r.user_id]||{};const acc=g.total_attempts?Math.round(g.correct_attempts/g.total_attempts*100):0;return `<div class="team-user"><div><b>${esc(p.display_name||'مستخدم')}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="team-metrics"><span>${g.completed_items||0} منجز</span><span>${acc}% دقة</span><span>${g.current_streak||0} أيام</span></div></div>`}).join('')+'</div>';
     el.innerHTML=html;
   }
+  function goHomeImmediately(){
+    const app=window.English350App;
+    if(typeof app?.showHome==='function'){
+      app.showHome();
+      return;
+    }
+    document.querySelector('.nv[data-v="home"]')?.click();
+  }
   async function applySession(session,{force=false,navigateHome=false}={}){
     const nextUser=session?.user||null;
     const sameUser=Boolean(user&&nextUser&&user.id===nextUser.id);
     user=nextUser;
+
+    // انقل الواجهة للرئيسية قبل إخفاء شاشة الدخول، حتى لا تظهر صفحة المزيد ولو للحظة.
+    if(user&&(navigateHome||!sessionApplied)){
+      goHomeImmediately();
+    }
     showAuth(!user);
 
     if(user){
@@ -136,7 +149,7 @@
       // وجّه للرئيسية فورًا قبل انتظار تحميل بيانات السحابة،
       // حتى لا تظهر صفحة «المزيد» لثوانٍ ثم تنتقل للرئيسية.
       if(navigateHome){
-        window.English350App?.showHome?.();
+        goHomeImmediately();
       }
       // لا نعيد تحميل التقدم أو إعادة رسم التطبيق عند تجدد التوكن
       // أو عند الرجوع للتبويب؛ المزامنة الكاملة تحدث مرة واحدة فقط لكل جلسة.
@@ -184,7 +197,7 @@
 
     const {data,error}=await client.auth.getSession();
     if(error)authMessage(error.message||'تعذر استعادة جلسة الدخول.','error');
-    await applySession(data?.session||null,{force:true});
+    await applySession(data?.session||null,{force:true,navigateHome:Boolean(data?.session)});
 
     window.addEventListener('online',()=>{setSync('جارٍ الاستئناف','syncing');scheduleSave(window.English350App?.getState?.())});
   }
