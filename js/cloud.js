@@ -5,7 +5,7 @@
   const client=window.supabase?.createClient?.(cfg.supabaseUrl,cfg.supabasePublishableKey,{
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
   });
-  let user=null, ready=false, applyingRemote=false, saveTimer=null;
+  let user=null, ready=false, applyingRemote=false, saveTimer=null, teamRenderSeq=0;
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -102,25 +102,38 @@
     if(error)alert(error.message);else renderTeamPanel();
   }
   async function renderTeamPanel(){
-    const el=$('team-panel');if(!el||!user)return;
-    el.innerHTML='<div class="sub">جارٍ تحميل المجموعة...</div>';
+    if(!user)return;
+    const seq=++teamRenderSeq;
+    const write=html=>{
+      if(seq!==teamRenderSeq)return false;
+      const current=$('team-panel');
+      if(!current)return false;
+      current.innerHTML=html;
+      return true;
+    };
+    if(!$('team-panel'))return;
+    write('<div class="sub">جارٍ تحميل المجموعة...</div>');
     const {data:memberships,error}=await client.from('team_members').select('team_id,role').eq('user_id',user.id);
-    if(error){el.innerHTML='<div class="sub">تعذر تحميل المجموعة.</div>';return}
+    if(seq!==teamRenderSeq)return;
+    if(error){write('<div class="sub">تعذر تحميل المجموعة.</div>');return}
     if(!memberships?.length){
-      el.innerHTML='<div class="team-empty"><div class="sub">أنشئ مجموعة أو انضم برمز يرسله لك زميلك.</div><div class="team-actions"><button class="b g" onclick="English350Cloud.createTeam()">إنشاء مجموعة</button><button class="b gh" onclick="English350Cloud.joinTeam()">الانضمام برمز</button></div></div>';return;
+      write('<div class="team-empty"><div class="sub">أنشئ مجموعة أو انضم برمز يرسله لك زميلك.</div><div class="team-actions"><button class="b g" onclick="English350Cloud.createTeam()">إنشاء مجموعة</button><button class="b gh" onclick="English350Cloud.joinTeam()">الانضمام برمز</button></div></div>');return;
     }
     const m=memberships[0];
     const {data:team}=await client.from('teams').select('id,name,join_code').eq('id',m.team_id).single();
+    if(seq!==teamRenderSeq)return;
     let html=`<div class="team-head"><div><b>${esc(team?.name||'المجموعة')}</b><div class="sub">رمز الانضمام: <strong class="team-code">${esc(team?.join_code||'—')}</strong></div></div></div>`;
     const {data:rows,error:membersError}=await client.from('team_members').select('user_id,role,joined_at').eq('team_id',m.team_id);
-    if(membersError){el.innerHTML=html+'<div class="sub" style="margin-top:12px">تعذر تحميل أعضاء المجموعة.</div>';return}
+    if(seq!==teamRenderSeq)return;
+    if(membersError){write(html+'<div class="sub" style="margin-top:12px">تعذر تحميل أعضاء المجموعة.</div>');return}
     const ids=(rows||[]).map(x=>x.user_id);
-    if(!ids.length){el.innerHTML=html+'<div class="sub" style="margin-top:12px">لا يوجد أعضاء بعد.</div>';return}
+    if(!ids.length){write(html+'<div class="sub" style="margin-top:12px">لا يوجد أعضاء بعد.</div>');return}
     const [{data:profiles,error:profilesError},{data:progress,error:progressError}]=await Promise.all([
       client.from('profiles').select('id,display_name').in('id',ids),
       client.from('user_progress').select('user_id,app_state,completed_items,learned_items,total_attempts,correct_attempts,current_streak,last_activity_at').in('user_id',ids)
     ]);
-    if(profilesError||progressError){el.innerHTML=html+'<div class="sub" style="margin-top:12px">تعذر تحميل لوحة الصدارة.</div>';return}
+    if(seq!==teamRenderSeq)return;
+    if(profilesError||progressError){write(html+'<div class="sub" style="margin-top:12px">تعذر تحميل لوحة الصدارة.</div>');return}
     const pm=Object.fromEntries((profiles||[]).map(x=>[x.id,x]));
     const gm=Object.fromEntries((progress||[]).map(x=>[x.user_id,x]));
     const ranked=(rows||[]).map(r=>{
@@ -132,7 +145,7 @@
     const medals=['🥇','🥈','🥉'];
     html+='<div class="leaderboard-note sub">الترتيب حسب نقاط XP الإجمالية</div>';
     html+='<div class="team-list leaderboard-list">'+ranked.map((r,i)=>`<div class="team-user leaderboard-user ${r.user_id===user.id?'is-me':''}"><div class="leader-rank">${medals[i]||`<span>${i+1}</span>`}</div><div class="leader-person"><b>${esc(r.name)}${r.user_id===user.id?' <small>أنت</small>':''}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="leader-score"><strong>${r.xp.toLocaleString('ar-SA')} XP</strong><div class="team-metrics"><span>${r.completed} منجز</span><span>${r.acc}% دقة</span><span>${r.streak} أيام</span></div></div></div>`).join('')+'</div>';
-    el.innerHTML=html;
+    write(html);
   }
   async function init(){
     if(!client){authMessage('تعذر تهيئة الاتصال.','error');showAuth(true);return}

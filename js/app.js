@@ -638,6 +638,8 @@ function vMore(){
  ${TTS.ok?`<div class="sub" style="margin:14px 0 5px">الصوت</div><select onchange="S.voice=this.value;save();pickVoice()">${TTS.list.map(v=>`<option value="${esc(v.name)}" ${TTS.voice&&TTS.voice.name===v.name?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select><div class="sub" style="margin:12px 0 5px">سرعة النطق</div><input type="range" min="0.5" max="1.3" step="0.1" value="${S.rate||.9}" onchange="S.rate=+this.value;save()">`:''}<button class="b gh full" style="margin-top:15px" onclick="reset()">إعادة تعيين التقدم</button></div>`;
  h+=`<div id="about-box" class="c ${MORE_PANEL==='about'?'':'hide'}"><h2>حول التطبيق</h2><div class="sub">منهج الإنجليزية — تجربة تعلم مركزة تجمع الكلمات والعبارات والمراجعة والتحدث.</div></div>`;
  document.getElementById('v-more').innerHTML=h;
+ // Any render rebuilds the More view. Reload the leaderboard whenever its panel remains open.
+ if(MORE_PANEL==='team') requestAnimationFrame(()=>window.English350Cloud?.renderTeamPanel?.());
 }
 
 /* ---------- SHELL ---------- */
