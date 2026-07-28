@@ -91,7 +91,11 @@
     if(!ready||!user||applyingRemote)return;
     clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveNow(state),650);
   }
-  async function logout(){await client.auth.signOut();}
+  async function logout(){
+    await client.auth.signOut();
+    history.replaceState({},document.title,location.pathname+location.search);
+    location.reload();
+  }
   function accountHTML(){
     if(!user)return '';
     return `<div class="account-mini"><div class="account-avatar">${esc((user.user_metadata?.display_name||user.email||'U').trim()[0]?.toUpperCase())}</div><div class="account-copy"><b>${esc(user.user_metadata?.display_name||'حسابي')}</b><span>${esc(user.email||'')}</span></div><button class="b gh account-logout" onclick="English350Cloud.logout()">خروج</button></div>`;
@@ -158,6 +162,10 @@
     $('auth-form')?.addEventListener('submit',submitAuth);
     document.querySelectorAll('[data-auth-mode]').forEach(b=>b.onclick=()=>setAuthMode(b.dataset.authMode));
     const {data}=await client.auth.getSession();user=data.session?.user||null;
+    const authHash=new URLSearchParams(location.hash.slice(1));
+    if(authHash.has('error')||authHash.has('error_code')){
+      history.replaceState({},document.title,location.pathname+location.search);
+    }
     client.auth.onAuthStateChange(async(_event,session)=>{
       user=session?.user||null;showAuth(!user);
       if(user){ready=true;await loadRemoteState();window.English350App?.render?.()}else{ready=false;setSync('غير متصل','')}
