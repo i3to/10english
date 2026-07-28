@@ -7,8 +7,14 @@
 <meta content="#58cc02" name="theme-color"/>
 <title>English 350</title>
 
-<link href="./css/app.css?v=2.3" rel="stylesheet"/></head>
-<body><div class="auth-screen" id="auth-screen"><div class="auth-card"><div class="auth-brand">English 350</div><div class="sub auth-sub">تعلّم، راجع، وتابع تقدمك من أي جهاز</div><div class="auth-tabs"><button class="on" data-auth-mode="login" type="button">دخول</button><button data-auth-mode="signup" type="button">حساب جديد</button><button data-auth-mode="magic" type="button">رابط سريع</button></div><form data-mode="login" id="auth-form"><input autocomplete="name" class="hide" id="auth-name" placeholder="الاسم"/><input autocomplete="email" id="auth-email" placeholder="البريد الإلكتروني" required="" type="email"/><input autocomplete="current-password" id="auth-password" placeholder="كلمة المرور" type="password"/><button class="b g full" id="auth-submit" type="submit">دخول</button><div class="auth-message" id="auth-message"></div></form></div></div>
+<link href="./css/app.css?v=2.3" rel="stylesheet"/>
+<style>
+/* Auth tabs: two equal-width options filling the entire container */
+.auth-tabs{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:4px}
+.auth-tabs button{width:100%;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}
+.auth-tabs button.on{transform:translateY(-1px)}
+</style></head>
+<body><div class="auth-screen" id="auth-screen"><div class="auth-card"><div class="auth-brand">English 350</div><div class="sub auth-sub">تعلّم، راجع، وتابع تقدمك من أي جهاز</div><div class="auth-tabs"><button class="on" data-auth-mode="login" type="button">دخول</button><button data-auth-mode="signup" type="button">حساب جديد</button><button class="hide" data-auth-mode="magic" type="button">رابط سريع</button></div><form data-mode="login" id="auth-form"><input autocomplete="name" class="hide" id="auth-name" placeholder="الاسم"/><input autocomplete="email" id="auth-email" placeholder="البريد الإلكتروني" required="" type="email"/><input autocomplete="current-password" id="auth-password" placeholder="كلمة المرور" type="password"/><button class="b g full" id="auth-submit" type="submit">دخول</button><div class="auth-message" id="auth-message"></div></form></div></div>
 <div class="hd">
 <div class="lg" id="pagetitle">الرئيسية</div><div class="sync-status" id="sync-status">جارٍ الاتصال</div>
 <div class="chips">
