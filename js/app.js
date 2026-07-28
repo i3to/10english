@@ -6,8 +6,20 @@ let S={cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[]
 try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
 if(!S.write)S.write={};if(!S.phrases)S.phrases=[];if(!S.production)S.production={};if(!S.scenarios)S.scenarios={};if(!S.intro)S.intro={};if(!S.spoken)S.spoken={};if(!S.theme)S.theme='system';
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};window.English350Cloud?.scheduleSave?.(S)};
-const AR=n=>String(n);
+const AR=n=>String(n).replace(/[٠-٩]/g,d=>'0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]).replace(/[۰-۹]/g,d=>'0123456789'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const latinDigits=s=>String(s??'').replace(/[٠-٩]/g,d=>'0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]).replace(/[۰-۹]/g,d=>'0123456789'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]);
+function normalizeNumerals(root=document){
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(n=>{const v=latinDigits(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v});
+  root.querySelectorAll?.('input,textarea').forEach(el=>{
+    if(el.placeholder)el.placeholder=latinDigits(el.placeholder);
+    if(el.value&&/[٠-٩۰-۹]/.test(el.value))el.value=latinDigits(el.value);
+  });
+}
+
 
 /* ---- flat icon system (replaces emoji) ---- */
 const ICONP={
@@ -688,7 +700,7 @@ function render(){
   for(const k in SAY)delete SAY[k];SID=0;
   setTitle(TITLES[V]||'منهج الإنجليزية');
   ({home:vHome,path:vPath,quiz:vQuiz,stat:vStat,find:vFind,phrases:vPhrases,more:vMore})[V]();
-  updHd();mountIcons();animateCounts();
+  updHd();mountIcons();animateCounts();normalizeNumerals(document);
 }
 function applyTheme(){document.documentElement.dataset.theme=S.theme||'system'}
 function setTheme(t){S.theme=t;save();applyTheme();render()}
@@ -706,5 +718,7 @@ show('home');
 window.English350App={
  getState:()=>JSON.parse(JSON.stringify(S)),
  replaceState:(next)=>{S=Object.assign({cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[],production:{},scenarios:{},intro:{},spoken:{},theme:'system'},next||{});try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};applyTheme();render()},
- render:()=>render()
+ render:()=>render(),
+ normalizeNumerals:(root)=>normalizeNumerals(root||document),
+ latinDigits
 };

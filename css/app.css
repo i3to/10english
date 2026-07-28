@@ -23,6 +23,16 @@
 --nav-tr:rgba(12,15,19,.82);--shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 10px 28px -10px rgba(0,0,0,.5);--shadow-card:0 1px 2px rgba(0,0,0,.2),0 6px 20px -8px rgba(0,0,0,.4);}
 body{font-family:'Plex',-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
 background:var(--bg);color:var(--tx);line-height:1.65;padding:0 0 104px;max-width:640px;margin:0 auto;font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* Global typography: keep every control and generated element on the app typeface. */
+html,body,button,input,textarea,select,option,optgroup{font-family:'Plex',-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Arabic",Tahoma,sans-serif!important}
+button,input,textarea,select{font:inherit;letter-spacing:inherit}
+input,textarea,select{font-weight:600}
+textarea{color:var(--tx);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:11px 13px;line-height:1.65}
+input::placeholder,textarea::placeholder{font-family:inherit;color:var(--tx3);opacity:1}
+body{font-variant-numeric:lining-nums tabular-nums}
+input,textarea,select,.chip,.sc,.team-code,.leader-score,.team-metrics,.qbar,.quick-timer{font-variant-numeric:lining-nums tabular-nums}
+
 h2{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.35}
 h3{font-size:15.5px;font-weight:800;letter-spacing:-.005em}
 .en{direction:ltr;text-align:left}
@@ -240,7 +250,7 @@ justify-content:center;padding:20px;z-index:99}
 .goal h3,.challenge h3,.ability h3{margin:0 0 8px;font-size:16px}.goal ul{margin:8px 0;padding-right:20px}.goal li{margin:5px 0}
 .phasebar{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:10px 0}.phase{font-size:11px;text-align:center;padding:7px 3px;border-radius:9px;background:var(--bg);color:var(--tx2);font-weight:800}.phase.on{background:var(--green-l);color:var(--green-t);border:1px solid var(--green)}
 .fav{border:0;background:transparent;font-size:22px;padding:2px 6px;cursor:pointer;color:var(--tx3)}.fav.on{color:var(--gold-t)}
-.production textarea,.scenario textarea{width:100%;min-height:80px;resize:vertical;margin:8px 0}.answerbox{padding:12px;border-radius:12px;background:var(--blue-l);margin-top:9px}.hiddenanswer{filter:blur(7px);user-select:none}.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modecard{padding:15px;border:1px solid var(--line-soft);border-radius:16px;background:var(--card);text-align:right;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .12s}.modecard:active{transform:scale(.97)}.modecard b{display:block;margin-bottom:4px}.ability-list{display:grid;gap:8px}.ability-item{display:flex;gap:8px;align-items:center;padding:10px;border-radius:11px;background:var(--bg)}
+.production textarea,.scenario textarea{width:100%;min-height:80px;resize:vertical;margin:8px 0;font-family:inherit;font-size:14.5px;font-weight:600}.answerbox{padding:12px;border-radius:12px;background:var(--blue-l);margin-top:9px}.hiddenanswer{filter:blur(7px);user-select:none}.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modecard{padding:15px;border:1px solid var(--line-soft);border-radius:16px;background:var(--card);text-align:right;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .12s}.modecard:active{transform:scale(.97)}.modecard b{display:block;margin-bottom:4px}.ability-list{display:grid;gap:8px}.ability-item{display:flex;gap:8px;align-items:center;padding:10px;border-radius:11px;background:var(--bg)}
 .quick-timer{font-size:28px;font-weight:900;text-align:center;color:var(--red-t);margin:8px}.situation{font-size:15px;background:var(--gold-l);padding:12px;border-radius:12px;margin:10px 0}.empty{text-align:center;padding:28px 14px;color:var(--tx2)}
 @media(max-width:430px){.modegrid{grid-template-columns:1fr}.phasebar{grid-template-columns:repeat(2,1fr)}}
 

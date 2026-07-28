@@ -109,6 +109,7 @@
       const current=$('team-panel');
       if(!current)return false;
       current.innerHTML=html;
+      window.English350App?.normalizeNumerals?.(current);
       return true;
     };
     if(!$('team-panel'))return;
@@ -144,7 +145,7 @@
     }).sort((a,b)=>b.xp-a.xp||b.completed-a.completed||b.acc-a.acc||new Date(a.joined_at)-new Date(b.joined_at));
     const medals=['🥇','🥈','🥉'];
     html+='<div class="leaderboard-note sub">الترتيب حسب نقاط XP الإجمالية</div>';
-    html+='<div class="team-list leaderboard-list">'+ranked.map((r,i)=>`<div class="team-user leaderboard-user ${r.user_id===user.id?'is-me':''}"><div class="leader-rank">${medals[i]||`<span>${i+1}</span>`}</div><div class="leader-person"><b>${esc(r.name)}${r.user_id===user.id?' <small>أنت</small>':''}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="leader-score"><strong>${r.xp.toLocaleString('ar-SA')} XP</strong><div class="team-metrics"><span>${r.completed} منجز</span><span>${r.acc}% دقة</span><span>${r.streak} أيام</span></div></div></div>`).join('')+'</div>';
+    html+='<div class="team-list leaderboard-list">'+ranked.map((r,i)=>`<div class="team-user leaderboard-user ${r.user_id===user.id?'is-me':''}"><div class="leader-rank">${medals[i]||`<span>${i+1}</span>`}</div><div class="leader-person"><b>${esc(r.name)}${r.user_id===user.id?' <small>أنت</small>':''}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="leader-score"><strong>${r.xp.toLocaleString('en-US')} XP</strong><div class="team-metrics"><span>${r.completed} منجز</span><span>${r.acc}% دقة</span><span>${r.streak} أيام</span></div></div></div>`).join('')+'</div>';
     write(html);
   }
   async function init(){
