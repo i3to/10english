@@ -175,21 +175,43 @@ function wrHTML(k){
   onkeydown="if(event.key==='Enter'){event.preventDefault();wrGo('${k}')}">
   <button class="go" onclick="wrGo('${k}')">التالي</button></div></div>`;
 }
+function updateHeaderCount(id,value,animate=true){
+  const el=document.getElementById(id);if(!el)return;
+  if(animate)countTo(el,value);else el.textContent=AR(value);
+}
+function refreshHeader(changed='all'){
+  if(changed==='all'||changed==='streak')updateHeaderCount('h-st',S.streak,changed!=='all');
+  if(changed==='all'||changed==='favorites')updateHeaderCount('h-xp',S.phrases.length,changed!=='all');
+  if(changed==='all'||changed==='due')updateHeaderCount('h-dw',dueList().length,changed!=='all');
+  const stChip=document.querySelector('.chip.st');
+  if(stChip)stChip.classList.toggle('pulse',(S.streak||0)>0);
+}
+function updateWriteBlock(k){
+  const input=document.getElementById('wi-'+k.replace('.','_'));
+  const wrap=input?.closest('.wr');
+  if(wrap)wrap.outerHTML=wrHTML(k);
+}
 function wrGo(k){
   const id='wi-'+k.replace('.','_');
   const el=document.getElementById(id);
   if(!el||!el.value.trim())return;
   S.write[k]=Math.min(5,(S.write[k]||0)+1);
-  save();render();
+  save();updateWriteBlock(k);
 }
-
 
 function phraseSaved(k){return S.phrases.includes(k)}
-function togglePhrase(k){
-  const i=S.phrases.indexOf(k);if(i>=0)S.phrases.splice(i,1);else{S.phrases.push(k);S.xp+=1}
-  save();render();
+function updateFavoriteButtons(k){
+  document.querySelectorAll('.fav[data-key="'+CSS.escape(k)+'"]').forEach(btn=>{
+    const saved=phraseSaved(k);btn.classList.toggle('on',saved);btn.innerHTML=saved?ic('star'):ic('starOutline');
+  });
 }
-function favBtn(k){return `<button class="fav ${phraseSaved(k)?'on':''}" onclick="event.stopPropagation();togglePhrase('${k}')" title="حفظ العبارة">${phraseSaved(k)?ic('star'):ic('starOutline')}</button>`}
+function togglePhrase(k){
+  const i=S.phrases.indexOf(k);
+  if(i>=0)S.phrases.splice(i,1);else{S.phrases.push(k);S.xp+=1}
+  save();updateFavoriteButtons(k);refreshHeader('favorites');
+  if(V==='phrases')vPhrases();
+}
+function favBtn(k){return `<button class="fav ${phraseSaved(k)?'on':''}" data-key="${esc(k)}" onclick="event.stopPropagation();togglePhrase('${k}')" title="حفظ العبارة">${phraseSaved(k)?ic('star'):ic('starOutline')}</button>`}
 function lessonGoal(g){
  const maps={verbs:'تصف ما تريد وتفعل وتفكر فيه',adj:'تصف الأشخاص والأشياء والمشاعر',nouns:'تتحدث عن العمل والحياة اليومية',general:'تربط أفكارك بصورة طبيعية',phrases:'تستخدم عبارات جاهزة في محادثات حقيقية'};
  return `<div class="goal"><h3>${ic('target')} هدف المجموعة</h3><div>بعد هذه المجموعة ستستطيع أن:</div><ul><li>${maps[g.section]}</li><li>تستخدم ${AR(g.items.length)} عناصر في جمل قصيرة</li><li>تجتاز الاسترجاع والموقف التطبيقي</li></ul><div class="sub">${ic('clock')} نحو 7–10 دقائق</div></div>`;
@@ -197,7 +219,11 @@ function lessonGoal(g){
 function phaseHTML(){
  return `<div class="lesson-reminder"><b>${ic('idea')} تذكّر</b><div class="lesson-steps">${ic('eye')} أقرأ ─── ${ic('speaker')} أسمع ─── ${ic('brain')} أتذكر ─── ${ic('mic')} أقول</div></div>`;
 }
-function saveProduction(gid){const e=document.getElementById('prod-'+gid);if(!e||!e.value.trim())return;S.production[gid]=e.value.trim();S.xp+=5;save();render()}
+function saveProduction(gid){
+ const e=document.getElementById('prod-'+gid);if(!e||!e.value.trim())return;
+ const wasEmpty=!S.production[gid];S.production[gid]=e.value.trim();if(wasEmpty)S.xp+=5;save();
+ const btn=e.parentElement?.querySelector('button');if(btn)btn.textContent='تحديث الجملة';
+}
 function productionHTML(g){
  const old=S.production[g.id]||'';
  return `<div class="challenge production"><h3>${ic('pencil')} استخدم كلمات اليوم</h3><div class="sub">اكتب جملة واحدة على الأقل باستخدام أي كلمة من المجموعة.</div><textarea id="prod-${g.id}" placeholder="اكتب جملتك بالإنجليزية...">${esc(old)}</textarea><button class="b bl full" onclick="saveProduction(${g.id})">${old?'تحديث الجملة':'حفظ · +5 نقاط'}</button></div>`;
@@ -208,7 +234,11 @@ function scenarioHTML(g){
  if(g.id%5!==0&&g.section!=='phrases')return'';const sc=SCENES[g.section],old=S.scenarios[g.id]||'';
  return `<div class="challenge scenario"><h3>${ic('flag')} موقف كامل</h3><div class="situation">${ic('pin')} ${sc[0]}<br>${sc[1]}</div><textarea id="scene-${g.id}" placeholder="ماذا ستقول بالإنجليزية؟">${esc(old)}</textarea><button class="b y full" onclick="saveScenario(${g.id})">${old?'تحديث الإجابة':'حفظ الموقف · +8 نقاط'}</button></div>`;
 }
-function saveScenario(gid){const e=document.getElementById('scene-'+gid);if(!e||!e.value.trim())return;S.scenarios[gid]=e.value.trim();S.xp+=8;save();render()}
+function saveScenario(gid){
+ const e=document.getElementById('scene-'+gid);if(!e||!e.value.trim())return;
+ const wasEmpty=!S.scenarios[gid];S.scenarios[gid]=e.value.trim();if(wasEmpty)S.xp+=8;save();
+ const btn=e.parentElement?.querySelector('button');if(btn)btn.textContent='تحديث الإجابة';
+}
 function abilityText(g){const x={verbs:'تطلب وتشرح ما تريده',adj:'تصف الأشياء والمشاعر',nouns:'تتحدث عن موضوعات الحياة والعمل',general:'تربط الجمل وتوضح رأيك',phrases:'ترد بسرعة دون ترجمة طويلة'};return x[g.section]}
 
 function wordHTML(k,open){
@@ -358,7 +388,7 @@ function startQ(mode){
   SPECIAL='';clearInterval(STIMER);QMode=mode;
   if(mode==='due'){Q=dueList().slice(0,20);if(!Q.length)Q=Object.keys(S.cards).slice(0,20);if(!Q.length)Q=Object.keys(ALL).slice(0,20);}
   else{const g=G.find(x=>x.id===mode);Q=g.items.map(i=>mode+'.'+i.n);}
-  if(!Q.length){show('home');return}
+  if(!Q.length){V='home';document.querySelectorAll('.view').forEach(x=>x.classList.add('hide'));document.getElementById('v-home')?.classList.remove('hide');render({animate:true});return}
   Q=Q.sort(()=>Math.random()-.5);QI=0;QSt='q';QR={g:0,y:0,r:0};
   show('quiz');
 }
@@ -438,7 +468,7 @@ function vQuiz(){
     <div class="sc"><b style="color:var(--red-t)">${AR(QR.r)}</b><span><span style="color:var(--red-t)">${ic('dot')}</span> ما أعرفها</span></div>
     <div class="sc"><b style="color:var(--blue-t)">+${AR(QR.g*4+QR.y*2+QR.r)}</b><span>نقطة</span></div></div>
     <button class="b g full" onclick="Q=[];render()">تم</button></div>`;
-    Q=[];render();return;
+    Q=[];render({animate:false});return;
   }
   const k=Q[QI],{it,g}=ALL[k],pct=QI/Q.length*100;
   const backRow=`<button class="backbtn" onclick="exitQuiz()">${ic('chevronLeft')}خروج</button>`;
@@ -547,7 +577,7 @@ function vStat(){
   document.getElementById('v-stat').innerHTML=h;
 }
 function reset(){if(confirm('حذف كل التقدم؟')){const v=S.voice,r=S.rate,a=S.auto;
-S={cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[],production:{},scenarios:{},intro:{},spoken:{},voice:v,rate:r,auto:a};save();render();updHd()}}
+S={cards:{},xp:0,streak:0,last:null,started:null,seen:[],write:{},phrases:[],production:{},scenarios:{},intro:{},spoken:{},voice:v,rate:r,auto:a};save();render({animate:false});updHd()}}
 
 /* ---------- FIND ---------- */
 let FQ='';
@@ -580,7 +610,7 @@ function vPhrases(){
  const list=S.phrases.map(getSavedPhrase).filter(Boolean);
  let h=`<button class="backbtn" onclick="show('more')">${ic('chevronLeft')}رجوع</button>`;
  h+=`<div class="c"><h2>${ic('star')} عباراتي</h2><div class="sub">هذه قائمتك الشخصية، وهي مستقلة عن مسار «عبارات · 40 كلمة».</div></div>`;
- h+=list.length?list.map(x=>`<div class="favbox"><div style="display:flex;justify-content:space-between;gap:8px"><div><b class="en">${esc(x.en)}</b><div>${esc(x.ar)}</div><div class="sub">${esc(x.m||'')}</div></div><div>${spkBtn(x.en)} <button class="fav on" onclick="togglePhrase('${x.k}')">${ic('star')}</button></div></div></div>`).join(''):`<div class="c empty">اضغط ${ic('starOutline')} بجانب أي جملة لحفظها هنا.</div>`;
+ h+=list.length?list.map(x=>`<div class="favbox"><div style="display:flex;justify-content:space-between;gap:8px"><div><b class="en">${esc(x.en)}</b><div>${esc(x.ar)}</div><div class="sub">${esc(x.m||'')}</div></div><div>${spkBtn(x.en)} <button class="fav on" data-key="${esc(x.k)}" onclick="togglePhrase('${x.k}')">${ic('star')}</button></div></div></div>`).join(''):`<div class="c empty">اضغط ${ic('starOutline')} بجانب أي جملة لحفظها هنا.</div>`;
  document.getElementById('v-phrases').innerHTML=h;
 }
 
@@ -588,24 +618,20 @@ function vPhrases(){
 function openPhraseTrack(){const g=G.find(x=>x.section==='phrases');if(g)jump(g.id)}
 let MORE_PANEL=null;
 function toggleMorePanel(name){
-  if(MORE_PANEL===name){
-    const box=document.getElementById(name==='settings'?'settings-box':'about-box');
-    if(box){
-      box.style.animation='slOut .18s ease-in forwards';
-      setTimeout(()=>{MORE_PANEL=null;render()},170);
-      return;
-    }
-  }
-  MORE_PANEL=name;render();
+  const ids={settings:'settings-box',about:'about-box'};
+  const next=MORE_PANEL===name?null:name;
+  Object.entries(ids).forEach(([key,id])=>document.getElementById(id)?.classList.toggle('hide',key!==next));
+  MORE_PANEL=next;
 }
 function vMore(){
- let h=`${window.English350Cloud?.accountHTML?.()||''}`+`<div class="c" style="padding:0">
- <div class="more-row" onclick="toggleMorePanel('team');setTimeout(()=>English350Cloud?.renderTeamPanel?.(),0)"><i>${ic('chart')}</i><div>تقدم المجموعة</div><span>${ic('chevronLeft')}</span></div>
+ const due=dueList().length;
+ let h=`${window.English350Cloud?.accountHTML?.()||''}
+ <div class="quick-review-card" onclick="startQuick()"><div class="quick-review-icon">${ic('lightning')}</div><div class="quick-review-copy"><b>مراجعة 60 ثانية</b><span>${due?`لديك ${AR(due)} كلمة جاهزة للمراجعة`:'جلسة سريعة لتثبيت ما تعلمته'}</span></div>${ic('chevronLeft')}</div>
+ <div class="c" style="padding:0">
+ <div class="more-row" onclick="show('league')"><i>${ic('trophy')}</i><div>الدوري</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="show('phrases')"><i>${ic('star')}</i><div>عباراتي المحفوظة</div><span>${ic('chevronLeft')}</span></div>
- <div class="more-row" onclick="startQuick()"><i>${ic('lightning')}</i><div>مراجعة 60 ثانية</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('settings')"><i>${ic('settings')}</i><div>الإعدادات</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('about')"><i>${ic('info')}</i><div>حول التطبيق</div><span>${ic('chevronLeft')}</span></div></div>`;
- h+=`<div id="team-box" class="c ${MORE_PANEL==='team'?'':'hide'}"><h2>تقدم المجموعة</h2><div id="team-panel"><div class="sub">افتح القسم لتحميل البيانات.</div></div></div>`;
  h+=`<div id="settings-box" class="c ${MORE_PANEL==='settings'?'':'hide'}"><h2>الإعدادات</h2>
  <div class="sub" style="margin:10px 0 5px">المظهر</div>
  <div class="seg">
@@ -620,20 +646,15 @@ function vMore(){
 
 /* ---------- SHELL ---------- */
 let V='home';
-function updHd(){
-  countTo(document.getElementById('h-st'),S.streak);
-  countTo(document.getElementById('h-xp'),S.xp);
-  countTo(document.getElementById('h-dw'),dueList().length);
-  const stChip=document.querySelector('.chip.st');
-  if(stChip)stChip.classList.toggle('pulse',(S.streak||0)>0);
-}
+function updHd(){refreshHeader('all')}
 function show(v){
+  if(V===v&&!document.getElementById('v-'+v)?.classList.contains('hide'))return;
   V=v;
   document.querySelectorAll('.view').forEach(x=>x.classList.add('hide'));
-  const el=document.getElementById('v-'+v);
-  el.classList.remove('hide');el.style.animation='none';void el.offsetWidth;el.style.animation='';
+  const el=document.getElementById('v-'+v);if(!el)return;
+  el.classList.remove('hide');
   document.querySelectorAll('.nv').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  render();window.scrollTo(0,0);
+  render({animate:false});window.scrollTo({top:0,behavior:'auto'});
 }
 const TITLES={home:'الرئيسية',path:'المنهج',quiz:'مراجعة',stat:'التقدم',find:'بحث',phrases:'عباراتي',more:'المزيد'};
 function setTitle(t){const e=document.getElementById('pagetitle');if(e)e.textContent=t}
@@ -660,14 +681,18 @@ function animateCounts(root){
     requestAnimationFrame(step);
   });
 }
-function render(){
+function render(options={}){
+  const {animate=false}=options;
   for(const k in SAY)delete SAY[k];SID=0;
   setTitle(TITLES[V]||'منهج الإنجليزية');
-  ({home:vHome,path:vPath,quiz:vQuiz,stat:vStat,find:vFind,phrases:vPhrases,more:vMore})[V]();
-  updHd();mountIcons();animateCounts();
+  ({home:vHome,path:vPath,quiz:vQuiz,stat:vStat,find:vFind,phrases:vPhrases,league:vLeague,more:vMore})[V]();
+  updHd();mountIcons();if(animate)animateCounts();
 }
 function applyTheme(){document.documentElement.dataset.theme=S.theme||'system'}
-function setTheme(t){S.theme=t;save();applyTheme();render()}
+function setTheme(t){
+  S.theme=t;save();applyTheme();
+  document.querySelectorAll('#settings-box .seg button').forEach((b,i)=>b.classList.toggle('on',['light','dark','system'][i]===t));
+}
 function mountIcons(root){
   (root||document).querySelectorAll('[data-ic]').forEach(el=>{
     if(el.dataset.mounted)return;
@@ -677,7 +702,7 @@ function mountIcons(root){
 document.querySelectorAll('.nv').forEach(b=>b.onclick=()=>show(b.dataset.v));
 applyTheme();
 mountIcons();
-show('home');
+V='home';document.querySelectorAll('.view').forEach(x=>x.classList.add('hide'));document.getElementById('v-home')?.classList.remove('hide');render({animate:true});
 
 window.English350App={
  getState:()=>JSON.parse(JSON.stringify(S)),
