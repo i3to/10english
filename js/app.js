@@ -228,10 +228,38 @@ function lessonGoal(g){
 function phaseHTML(){
  return `<div class="lesson-reminder"><b>${ic('idea')} تذكّر</b><div class="lesson-steps">${ic('eye')} أقرأ ─── ${ic('speaker')} أسمع ─── ${ic('brain')} أتذكر ─── ${ic('mic')} أقول</div></div>`;
 }
-function saveProduction(gid){const e=document.getElementById('prod-'+gid);if(!e||!e.value.trim())return;S.production[gid]=e.value.trim();S.xp+=5;save();render()}
+function saveProduction(gid){
+ const e=document.getElementById('prod-'+gid);
+ if(!e||!e.value.trim())return;
+ const firstCompletion=!S.production[gid];
+ S.production[gid]=e.value.trim();
+ if(firstCompletion)S.xp+=5;
+ save();
+ updHd();
+ showProductionSuccess(gid,firstCompletion);
+}
+function showProductionSuccess(gid,earned){
+ document.querySelector('.production-success')?.remove();
+ const el=document.createElement('div');
+ el.className='pop production-success';
+ el.innerHTML=`<div>
+   <div class="success-mark">${ic('check')}</div>
+   <h2 style="margin:10px 0 5px">أحسنت!</h2>
+   <div>تم حفظ تقدمك بنجاح.</div>
+   ${earned?'<div class="xp-earned">+5 XP</div>':''}
+   <div class="sub motivation-line">كل جملة تكتبها تقرّبك من هدفك. 🌟</div>
+ </div>`;
+ document.body.appendChild(el);
+ setTimeout(()=>{
+   el.remove();
+   const next=G.find(g=>g.id===gid+1);
+   if(next){PDETAIL=next.id;OPEN=firstOf(next.id);OPENSET=true;show('path')}
+   else{PDETAIL=null;show('path')}
+ },1200);
+}
 function productionHTML(g){
  const old=S.production[g.id]||'';
- return `<div class="challenge production"><h3>${ic('pencil')} استخدم كلمات اليوم</h3><div class="sub">اكتب جملة واحدة على الأقل باستخدام أي كلمة من المجموعة.</div><textarea id="prod-${g.id}" placeholder="اكتب جملتك بالإنجليزية...">${esc(old)}</textarea><button class="b bl full" onclick="saveProduction(${g.id})">${old?'تحديث الجملة':'حفظ · +5 نقاط'}</button></div>`;
+ return `<div class="challenge production"><h3>${ic('pencil')} استخدم كلمات اليوم <span class="self-practice">(تمرين ذاتي)</span></h3><div class="sub">اكتب جملة واحدة على الأقل باستخدام أي كلمة من المجموعة.</div><textarea id="prod-${g.id}" placeholder="اكتب جملتك بالإنجليزية...">${esc(old)}</textarea><button class="b bl full" onclick="saveProduction(${g.id})">تم الإنجاز</button></div>`;
 }
 const SCENES={
   verbs:['في المكتب','تحتاج مساعدة في ملف وتريد أن تطلبها بأدب.'],adj:['وصف تجربة','صف اجتماعاً أو مشروعاً بثلاث صفات.'],nouns:['محادثة عمل','تحدث عن مشروع أو مشكلة أو قرار.'],general:['ربط الأفكار','قدّم رأياً مع سبب ونتيجة.'],phrases:['موقف يومي','استخدم عبارتين جاهزتين لبدء المحادثة أو إنهائها.']};

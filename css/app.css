@@ -273,3 +273,12 @@ justify-content:center;padding:20px;z-index:99}
 .leader-score{text-align:end}
 .leader-score>strong{display:block;font-size:17px;color:var(--green);margin-bottom:7px;direction:ltr}
 @media(max-width:620px){.leaderboard-user{grid-template-columns:36px 1fr}.leader-score{grid-column:2;text-align:start}.leader-score>strong{margin-top:7px;direction:ltr;text-align:start}.leaderboard-user .team-metrics{justify-content:flex-start}}
+
+
+/* Self-practice completion */
+.self-practice{font-size:.82em;font-weight:600;color:var(--tx3)}
+.production-success{pointer-events:none}
+.production-success>div{max-width:330px;padding:26px 22px}
+.success-mark{width:54px;height:54px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:var(--green-l);color:var(--green-t);font-size:30px}
+.xp-earned{margin-top:10px;font-size:22px;font-weight:800;color:var(--blue-t);direction:ltr}
+.motivation-line{margin-top:9px;line-height:1.7}
