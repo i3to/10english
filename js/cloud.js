@@ -146,6 +146,13 @@
     showAuth(!user);
     if(user){ready=true;await loadRemoteState();window.English350App?.render?.()}
     window.addEventListener('online',()=>{setSync('جارٍ الاستئناف','syncing');scheduleSave(window.English350App?.getState?.())});
+    const refreshVisibleTeam=()=>{
+      const panel=$('team-panel');
+      const box=$('team-box');
+      if(user&&panel&&box&&!box.classList.contains('hide')) renderTeamPanel();
+    };
+    window.addEventListener('focus',refreshVisibleTeam);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshVisibleTeam()});
   }
   window.English350Cloud={init,scheduleSave,saveNow,logout,accountHTML,renderTeamPanel,createTeam,joinTeam,getUser:()=>user};
   document.addEventListener('DOMContentLoaded',init);

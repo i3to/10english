@@ -607,19 +607,22 @@ function vPhrases(){
 function openPhraseTrack(){const g=G.find(x=>x.section==='phrases');if(g)jump(g.id)}
 let MORE_PANEL=null;
 function toggleMorePanel(name){
+  const boxId=name==='settings'?'settings-box':name==='about'?'about-box':'team-box';
   if(MORE_PANEL===name){
-    const box=document.getElementById(name==='settings'?'settings-box':'about-box');
+    const box=document.getElementById(boxId);
     if(box){
       box.style.animation='slOut .18s ease-in forwards';
       setTimeout(()=>{MORE_PANEL=null;render()},170);
       return;
     }
   }
-  MORE_PANEL=name;render();
+  MORE_PANEL=name;
+  render();
+  if(name==='team') requestAnimationFrame(()=>window.English350Cloud?.renderTeamPanel?.());
 }
 function vMore(){
  let h=`${window.English350Cloud?.accountHTML?.()||''}`+`<div class="c" style="padding:0">
- <div class="more-row" onclick="toggleMorePanel('team');setTimeout(()=>English350Cloud?.renderTeamPanel?.(),0)"><i>${ic('chart')}</i><div>لوحة الصدارة</div><span>${ic('chevronLeft')}</span></div>
+ <div class="more-row" onclick="toggleMorePanel('team')"><i>${ic('chart')}</i><div>لوحة الصدارة</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="show('phrases')"><i>${ic('star')}</i><div>عباراتي المحفوظة</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="startQuick()"><i>${ic('lightning')}</i><div>مراجعة 60 ثانية</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('settings')"><i>${ic('settings')}</i><div>الإعدادات</div><span>${ic('chevronLeft')}</span></div>
