@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=1" name="viewport"/>
+<meta content="#58cc02" name="theme-color"/>
+<title>English 350</title>
+
+<link href="./css/app.css" rel="stylesheet"/></head>
+<body><div class="auth-screen" id="auth-screen"><div class="auth-card"><div class="auth-brand">English 350</div><div class="sub auth-sub">تعلّم، راجع، وتابع تقدمك من أي جهاز</div><div class="auth-tabs"><button class="on" data-auth-mode="login" type="button">دخول</button><button data-auth-mode="signup" type="button">حساب جديد</button><button data-auth-mode="magic" type="button">رابط سريع</button></div><form data-mode="login" id="auth-form"><input autocomplete="name" class="hide" id="auth-name" placeholder="الاسم"/><input autocomplete="email" id="auth-email" placeholder="البريد الإلكتروني" required="" type="email"/><input autocomplete="current-password" id="auth-password" placeholder="كلمة المرور" type="password"/><button class="b g full" id="auth-submit" type="submit">دخول</button><div class="auth-message" id="auth-message"></div></form></div></div>
+<div class="hd">
+<div class="lg" id="pagetitle">الرئيسية</div><div class="sync-status" id="sync-status">جارٍ الاتصال</div>
+<div class="chips">
+<div class="chip st"><i data-ic="flame"></i><span id="h-st">0</span></div>
+<div class="chip xp"><i data-ic="star"></i><span id="h-xp">0</span></div>
+<div class="chip dw"><i data-ic="book"></i><span id="h-dw">0</span></div>
+</div>
+</div>
+<div class="wrap">
+<div class="view" id="v-home"></div>
+<div class="view hide" id="v-path"></div>
+<div class="view hide" id="v-quiz"></div>
+<div class="view hide" id="v-stat"></div>
+<div class="view hide" id="v-find"></div>
+<div class="view hide" id="v-phrases"></div>
+<div class="view hide" id="v-more"></div>
+</div>
+<div class="nav">
+<button class="nv" data-v="home"><i data-ic="home"></i>الرئيسية</button>
+<button class="nv" data-v="path"><i data-ic="book"></i>المنهج</button>
+<button class="nv" data-v="quiz"><i data-ic="refresh"></i>مراجعة</button>
+<button class="nv" data-v="stat"><i data-ic="chart"></i>التقدم</button>
+<button class="nv" data-v="more"><i data-ic="settings"></i>المزيد</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./js/config.js"></script><script src="./js/cloud.js"></script><script src="./js/data.js"></script><script src="./js/app.js"></script></body></html>
