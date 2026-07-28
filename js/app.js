@@ -619,12 +619,12 @@ function toggleMorePanel(name){
 }
 function vMore(){
  let h=`${window.English350Cloud?.accountHTML?.()||''}`+`<div class="c" style="padding:0">
- <div class="more-row" onclick="toggleMorePanel('team');setTimeout(()=>English350Cloud?.renderTeamPanel?.(),0)"><i>${ic('chart')}</i><div>تقدم المجموعة</div><span>${ic('chevronLeft')}</span></div>
+ <div class="more-row" onclick="toggleMorePanel('team');setTimeout(()=>English350Cloud?.renderTeamPanel?.(),0)"><i>${ic('chart')}</i><div>لوحة الصدارة</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="show('phrases')"><i>${ic('star')}</i><div>عباراتي المحفوظة</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="startQuick()"><i>${ic('lightning')}</i><div>مراجعة 60 ثانية</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('settings')"><i>${ic('settings')}</i><div>الإعدادات</div><span>${ic('chevronLeft')}</span></div>
  <div class="more-row" onclick="toggleMorePanel('about')"><i>${ic('info')}</i><div>حول التطبيق</div><span>${ic('chevronLeft')}</span></div></div>`;
- h+=`<div id="team-box" class="c ${MORE_PANEL==='team'?'':'hide'}"><h2>تقدم المجموعة</h2><div id="team-panel"><div class="sub">افتح القسم لتحميل البيانات.</div></div></div>`;
+ h+=`<div id="team-box" class="c ${MORE_PANEL==='team'?'':'hide'}"><h2>لوحة الصدارة</h2><div id="team-panel"><div class="sub">افتح القسم لتحميل البيانات.</div></div></div>`;
  h+=`<div id="settings-box" class="c ${MORE_PANEL==='settings'?'':'hide'}"><h2>الإعدادات</h2>
  <div class="sub" style="margin:10px 0 5px">المظهر</div>
  <div class="seg">

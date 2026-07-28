@@ -112,17 +112,26 @@
     const m=memberships[0];
     const {data:team}=await client.from('teams').select('id,name,join_code').eq('id',m.team_id).single();
     let html=`<div class="team-head"><div><b>${esc(team?.name||'المجموعة')}</b><div class="sub">رمز الانضمام: <strong class="team-code">${esc(team?.join_code||'—')}</strong></div></div></div>`;
-    if(!['owner','admin'].includes(m.role)){
-      html+='<div class="sub" style="margin-top:12px">تقدم المجموعة متاح للمدير. تقدمك محفوظ ومتزامن.</div>';el.innerHTML=html;return;
-    }
-    const {data:rows}=await client.from('team_members').select('user_id,role,joined_at').eq('team_id',m.team_id);
+    const {data:rows,error:membersError}=await client.from('team_members').select('user_id,role,joined_at').eq('team_id',m.team_id);
+    if(membersError){el.innerHTML=html+'<div class="sub" style="margin-top:12px">تعذر تحميل أعضاء المجموعة.</div>';return}
     const ids=(rows||[]).map(x=>x.user_id);
-    const [{data:profiles},{data:progress}]=await Promise.all([
+    if(!ids.length){el.innerHTML=html+'<div class="sub" style="margin-top:12px">لا يوجد أعضاء بعد.</div>';return}
+    const [{data:profiles,error:profilesError},{data:progress,error:progressError}]=await Promise.all([
       client.from('profiles').select('id,display_name').in('id',ids),
-      client.from('user_progress').select('user_id,completed_items,learned_items,total_attempts,correct_attempts,current_streak,last_activity_at').in('user_id',ids)
+      client.from('user_progress').select('user_id,app_state,completed_items,learned_items,total_attempts,correct_attempts,current_streak,last_activity_at').in('user_id',ids)
     ]);
-    const pm=Object.fromEntries((profiles||[]).map(x=>[x.id,x]));const gm=Object.fromEntries((progress||[]).map(x=>[x.user_id,x]));
-    html+='<div class="team-list">'+(rows||[]).map(r=>{const p=pm[r.user_id]||{},g=gm[r.user_id]||{};const acc=g.total_attempts?Math.round(g.correct_attempts/g.total_attempts*100):0;return `<div class="team-user"><div><b>${esc(p.display_name||'مستخدم')}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="team-metrics"><span>${g.completed_items||0} منجز</span><span>${acc}% دقة</span><span>${g.current_streak||0} أيام</span></div></div>`}).join('')+'</div>';
+    if(profilesError||progressError){el.innerHTML=html+'<div class="sub" style="margin-top:12px">تعذر تحميل لوحة الصدارة.</div>';return}
+    const pm=Object.fromEntries((profiles||[]).map(x=>[x.id,x]));
+    const gm=Object.fromEntries((progress||[]).map(x=>[x.user_id,x]));
+    const ranked=(rows||[]).map(r=>{
+      const p=pm[r.user_id]||{},g=gm[r.user_id]||{};
+      const xp=Math.max(0,Number(g.app_state?.xp||0));
+      const acc=g.total_attempts?Math.round(Number(g.correct_attempts||0)/Number(g.total_attempts)*100):0;
+      return {...r,name:p.display_name||'مستخدم',xp,acc,completed:Number(g.completed_items||0),streak:Number(g.current_streak||0)};
+    }).sort((a,b)=>b.xp-a.xp||b.completed-a.completed||b.acc-a.acc||new Date(a.joined_at)-new Date(b.joined_at));
+    const medals=['🥇','🥈','🥉'];
+    html+='<div class="leaderboard-note sub">الترتيب حسب نقاط XP الإجمالية</div>';
+    html+='<div class="team-list leaderboard-list">'+ranked.map((r,i)=>`<div class="team-user leaderboard-user ${r.user_id===user.id?'is-me':''}"><div class="leader-rank">${medals[i]||`<span>${i+1}</span>`}</div><div class="leader-person"><b>${esc(r.name)}${r.user_id===user.id?' <small>أنت</small>':''}</b><span>${r.role==='owner'?'المالك':r.role==='admin'?'مدير':'عضو'}</span></div><div class="leader-score"><strong>${r.xp.toLocaleString('ar-SA')} XP</strong><div class="team-metrics"><span>${r.completed} منجز</span><span>${r.acc}% دقة</span><span>${r.streak} أيام</span></div></div></div>`).join('')+'</div>';
     el.innerHTML=html;
   }
   async function init(){
