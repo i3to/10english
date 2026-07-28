@@ -40,7 +40,12 @@
         if(password.length<6)throw new Error('كلمة المرور يجب ألا تقل عن 6 أحرف.');
         result=await client.auth.signUp({email,password,options:{data:{display_name:name||email.split('@')[0]}}});
         if(result.error)throw result.error;
-        authMessage(result.data.session?'تم إنشاء الحساب.':'تم إنشاء الحساب. افتح رسالة التأكيد في بريدك ثم سجّل الدخول.','success');
+        if(result.data.session){
+          authMessage('تم إنشاء الحساب وتسجيل الدخول بنجاح.','success');
+          setTimeout(()=>location.reload(),700);
+        }else{
+          authMessage('تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.','success');
+        }
       }else if(mode==='magic'){
         result=await client.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
         if(result.error)throw result.error;
